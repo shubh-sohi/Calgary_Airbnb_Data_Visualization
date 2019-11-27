@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Variation in price in Calgary Airbnb</title>
+    <style>
+        body{
+            font: 10px sans-serif;
+        }
+        .y.axisRight text{
+            fill: #34A853;
+        }
+        .y.axisLeft text{
+            fill: #4285F4;
+        }
+        .x.axis text{
+            transform: rotate(40deg);
+        }
+        .axis path,
+        .axis line{
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+        .bar1{
+            fill: #4285F4;
+        }
+        .bar1:hover{
+            fill: red;
+        }
+        .bar2{
+            fill: #34A853;
+        }
+        .bar2:hover{
+            fill:red;
+        }
+        .x.axis path{
+            display: none;
+        }
+        .d3-tip {
+            line-height: 1;
+            font-weight: bold;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            border-radius: 10px;
+        }
+        .legend {
+            font-size: 16px;
+            font-weight: bold;
+            text-anchor: start;
+        }
+        .made{
+            fill: #4285F4;
+        }
+        .made:hover{
+            fill:red;
+        }
+    </style>
+    <h1 style="text-align: center">
+        Visualization for 2 bedrooms airbnb's booked with
+    </h1>
+    <h1 style="text-align: center">
+        their location and price in caldary in between August 2016 to August 2017
+
+    </h1>
+    <h3 id = "removeThis">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        ↓ ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ←← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ←Please select a month
+
+    </h3>
+    <h1>
+        <select id="selectButton"></select>
+        <!--<button id = "okay">Go Back</button>-->
+        <div id="BACKoption">
+            <input name="backButton"
+                   type="button"
+                   value="Go back"
+                   onclick="noMapUpdate()"/>
+        </div>
+        <!--<select id="selectButton01"></select>-->
+        <div id="MAPoption">
+            <input name="updateButton"
+                   type="button"
+                   value="View graph with MAP"
+                   onclick="MAPupdateData()"/>
+        </div>
+
+    </h1>
+    <!--<h1>-->
+        <!--<select id="selectButton01"></select>-->
+    <!--</h1>-->
+    <script src="http://d3js.org/d3.v5.min.js"></script>
+    <script src="d3-tip.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+
+    document.getElementById('BACKoption').style.display = 'none';
+
+    var groups = ["Select a Month", "august_2016", "sept_2016", "oct_2016", "nov_2016", "dec_2016", "jan_2017", "feb_2017", "mar_2017", "april_2017", "may_2017", "june_2017", "july_2017", "august_2017"];
+
+    var dropDown = d3.select("#selectButton");
+    // var dropDown01 = d3.select("#selectButton01");
+
+    dropDown.selectAll("myButtons")
+        .data(groups)
+        .enter()
+        .append("option")
+        .text(function (d) {return d;})
+        .attr("value", function (d) {return d;});
+
+    // dropDown01.selectAll("myButtons")
+    //     .data(groups)
+    //     .enter()
+    //     .append("option")
+    //     .text(function (d) {return d;})
+    //     .attr("value01", function (d) {return d;});
+
+
+    var august_2016 = "calgary/tomslee_airbnb_calgary_0542_2016-08-22.csv", sept_2016 = "calgary/tomslee_airbnb_calgary_0554_2016-09-11.csv",
+        oct_2016 = "calgary/tomslee_airbnb_calgary_0579_2016-09-21.csv", nov_2016 = "calgary/tomslee_airbnb_calgary_0624_2016-10-27.csv",
+        dec_2016 = "calgary/tomslee_airbnb_calgary_0679_2016-12-09.csv", jan_2017 = "calgary/tomslee_airbnb_calgary_0724_2016-12-25.csv",
+        feb_2017 = "calgary/tomslee_airbnb_calgary_0870_2017-02-12.csv", mar_2017 = "calgary/tomslee_airbnb_calgary_0943_2017-03-11.csv",
+        april_2017 = "calgary/tomslee_airbnb_calgary_1055_2017-04-10.csv", may_2017 = "calgary/tomslee_airbnb_calgary_1203_2017-05-08.csv",
+        june_2017 = "calgary/tomslee_airbnb_calgary_1326_2017-06-10.csv", july_2017 = "calgary/tomslee_airbnb_calgary_1443_2017-07-10.csv",
+        august_2017 = "calgary/tomslee_airbnb_calgary_1558_2017-08-10.csv";
+
+    // d3.csv(august_2016).then(function (value) {
+    //     manage_data(value);
+    // });
+
+    var selected;
+    var temp = 0;
+
+    dropDown.on("change", function () {
+        document.getElementById('removeThis').style.display = 'none';
+        d3.selectAll("svg").remove();
+        selected = this.value;
+        // console.log(window[selected]);
+        d3.csv(window[selected]).then(function (value) {
+            manage_data(value);
+        });
+
+    });
+
+
+    function generateVisualization(fullset){
+        dataset = fullset.RECORDS;
+
+        var margin = {top: 80, right: 80, bottom: 80, left: 80},
+            width = (600 - margin.left - margin.right),
+            height = 400 - margin.top - margin.bottom;
+
+        var x = d3.scaleBand()
+            .rangeRound([0, width])
+            .padding(0.1);
+
+        var y0 = d3.scaleLinear()
+            .range([height, 0]);
+
+        var y1 = d3.scaleLinear()
+            .domain([30,80])
+            .range([height, 0]);
+
+        var xAxis = d3.axisBottom(x);
+
+        var yAxisLeft = d3.axisLeft(y0)
+            .tickArguments([4]);
+
+        var yAxisRight = d3.axisRight(y1)
+            .tickArguments([10]);
+
+        var svg = d3.select("body")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom + 100)
+            .append("g")
+            .attr("class", "graph")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        x.domain(dataset.map(function(d){
+            return d.name;}));
+
+        y0.domain(["0","800"]);
+
+        function graph_left(svgLeft){
+            var tip = d3.tip()
+                .attr('class', 'd3-tip')
+                .offset([-10, 0])
+                .html(function(d) {
+                    return "<strong>Bookings:</strong> <span style='color:red'>" + d.value + "</span>";
+            });
+
+            svgLeft.append("text")
+                .attr("x", -30)
+                .attr("y", -60)
+                .attr("class", "legend")
+                .style("fill", "#626665")
+                .text("The following information is for : "+selected);
+
+            svgLeft.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis)
+                .selectAll("text")
+                .style("text-anchor", "start")
+                .attr("dx", "+.50em")
+                .attr("dy", "+0.50em");
+
+            svgLeft.append("g")
+                .attr("class", "y axis axisLeft")
+                .call(yAxisLeft)
+                .append("text")
+                .attr("y", 6)
+                .attr("dy", "-2em")
+                .style("text-anchor", "middle")
+                .text("Total Bookings");
+
+            bars = svgLeft.selectAll(".bar")
+                .data(dataset)
+                .enter();
+
+            bars.append("rect")
+                .call(tip)
+                .on("mouseover", tip.show)
+                .on("mouseout", tip.hide)
+                .transition()
+                .delay(function(d, i) { return i*60; })
+                .duration(500)
+                .attr("class", "bar1")
+                .attr("x", function (d) {return x(d.name);})
+                .attr("width" , x.bandwidth())
+                .attr("y", function (d) { return y0(d.value);})
+                .attr("height", function(d){
+                    // console.log(d.value);
+                    return height - y0(d.value);});
+
+
+            svgLeft.append("text")
+                .attr("x", 0)
+                .attr("y", height + margin.top + 10)
+                .attr("class", "legend")
+                .style("fill", "4285F4")
+                .text("Total Bookings: " + fullset.SUMS[0].sumBookings);
+
+
+        }
+
+        function graph_right(svgRight) {
+            svgRight = d3.select("body")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom + 100)
+                .append("g")
+                .attr("class", "graph")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            var tip01 = d3.tip()
+                .attr('class', 'd3-tip')
+                .offset([-10, 0])
+                .html(function(d) {
+                    return "<strong>Average Price: $</strong> <span style='color:red'>" + d.price.toFixed(2) + "</span>";
+                });
+
+            svgRight.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis)
+                .selectAll("text")
+                .style("text-anchor", "start")
+                .attr("dx", "+.50em")
+                .attr("dy", "+0.50em");
+
+            svgRight.append("g")
+                .attr("class", "y axis axisRight")
+                .attr("transform", "translate(" + (width) + ",0)")
+                .call(yAxisRight)
+                .append("text")
+                .attr("y", 6)
+                .attr("dy", "-2em")
+                .attr("dx", "2em")
+                .style("text-anchor", "middle")
+                .text("Average Price in CAD");
+
+            bars = svgRight.selectAll(".bar")
+                // .call(tip01)
+                .data(dataset)
+                .enter();
+
+            bars.append("rect")
+                .call(tip01)
+                .on("mouseover", tip01.show)
+                .on("mouseout", tip01.hide)
+                .transition()
+                .delay(function(d, i) { return i*60; })
+                .duration(500)
+                .attr("class", "bar2")
+                .attr("x", function (d) {return x(d.name);})
+                .attr("width" , x.bandwidth())
+                .attr("y", function (d) { return y1(d.price);})
+                .attr("height", function(d){
+                    return height - y1(d.price);});
+
+
+            svgRight.append("text")
+                .attr("x", 0)
+                .attr("y", height + margin.top + 10)
+                .attr("class", "legend")
+                .style("fill", "34A853")
+                .text("Total Average Price: $" + (fullset.SUMS[1].sumPrice).toFixed(2));
+        }
+        if (temp == 0){
+            graph_left(svg);
+            graph_right(svg);
+        }
+        if (temp == 1){
+            graph_combination(svg);
+            rightMap(svg);
+
+        }
+        // graph_combination(svg01);
+
+        function graph_combination(svgLeft){
+            var tip = d3.tip()
+                .attr('class', 'd3-tip')
+                .offset([-10, 0])
+                .html(function(d) {
+                    return "<strong>Bookings:</strong> <span style='color:red'>" + d.value + "</span>";
+                });
+
+            var tip01 = d3.tip()
+                .attr('class', 'd3-tip')
+                .offset([-10, 0])
+                .html(function(d) {
+                    return "<strong>Average Price: $</strong> <span style='color:red'>" + d.price.toFixed(2) + "</span>";
+                });
+
+            svgLeft.append("text")
+                .attr("x", -30)
+                .attr("y", -60)
+                .attr("class", "legend")
+                .style("fill", "#626665")
+                .text("The following information is for : "+selected);
+
+            svgLeft.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis)
+                .selectAll("text")
+                .style("text-anchor", "start")
+                .attr("dx", "+.50em")
+                .attr("dy", "+0.50em");
+
+            svgLeft.append("g")
+                .attr("class", "y axis axisLeft")
+                .call(yAxisLeft)
+                .append("text")
+                .attr("y", 6)
+                .attr("dy", "-2em")
+                .style("text-anchor", "middle")
+                .text("Total Bookings");
+
+            svgLeft.append("g")
+                .attr("class", "y axis axisRight")
+                .attr("transform", "translate(" + (width) + ",0)")
+                .call(yAxisRight)
+                .append("text")
+                .attr("y", 6)
+                .attr("dy", "-2em")
+                .attr("dx", "2em")
+                .style("text-anchor", "middle")
+                .text("Average Price in CAD");
+
+            bars = svgLeft.selectAll(".bar")
+                .data(dataset)
+                .enter();
+
+            bars.append("rect")
+                .call(tip)
+                .on("mouseover", tip.show)
+                .on("mouseout", tip.hide)
+                .transition()
+                .delay(function(d, i) { return i*60; })
+                .duration(500)
+                .attr("class", "bar1")
+                .attr("x", function (d) {return x(d.name);})
+                .attr("width" , x.bandwidth()/2)
+                .attr("y", function (d) { return y0(d.value);})
+                .attr("height", function(d){
+                    // console.log(d.value);
+                    return height - y0(d.value);});
+
+            bars.append("rect")
+                .call(tip01)
+                .on("mouseover", tip01.show)
+                .on("mouseout", tip01.hide)
+                .transition()
+                .delay(function(d, i) { return i*60; })
+                .duration(500)
+                .attr("class", "bar2")
+                .attr("x", function (d) {return x(d.name) + x.bandwidth()/2;})
+                .attr("width" , x.bandwidth()/2)
+                .attr("y", function (d) { return y1(d.price);})
+                .attr("height", function(d){
+                    return height - y1(d.price);});
+
+            svgLeft.append("text")
+                .attr("x", 0)
+                .attr("y", height + margin.top + 10)
+                .attr("class", "legend")
+                .style("fill", "4285F4")
+                .text("Total Bookings: " + fullset.SUMS[0].sumBookings);
+            svgLeft.append("text")
+                .attr("x", 0)
+                .attr("y", height + margin.top + 40)
+                .attr("class", "legend")
+                .style("fill", "34A853")
+                .text("Total Average Price: $" + (fullset.SUMS[1].sumPrice).toFixed(2));
+
+        }
+
+        function rightMap(svgRight){
+
+            svgRight = d3.select("body")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom + 100)
+                .append("g")
+                .attr("class", "graph")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            svgRight.append("text")
+                .attr("x", +90)
+                .attr("y", -60)
+                .attr("class", "legend")
+                .style("fill", "#626665")
+                .text("Hover over the map to get the relative information.");
+
+            d3.json("https://data.calgary.ca/resource/mz2j-7eb5.geojson").then(function(json) {
+
+                var projection = d3.geoMercator()
+                    .fitSize([width+100,height+100],json);
+
+
+                //Define path generator
+                var path = d3.geoPath()
+                    .projection(projection);
+
+                //Bind data and create one path per GeoJSON feature
+                svgRight.selectAll("path")
+                    .data(json.features)
+                    .enter()
+                    .append("path")
+                    .attr("d", path)
+                    // .attr('fill', 'steelblue')
+                    .attr('stroke', 'black')
+                    .attr("class", "made")
+                    .append('title')
+                    .text(function(d) {
+                        var nowvalue, nowprice;
+                        for (var i = 0 ; i < 8; i++){
+                            if (dataset[i].name == d.properties.sector){
+                                nowvalue = dataset[i].value;
+                                nowprice = dataset[i].price
+                            }
+                        }
+                        return "Area : "+d.properties.sector+"\nThere were "+nowvalue+" Bookings in the month of "+selected+
+                            "\nwith an average price of $"+nowprice.toFixed(2)+" per booking.";
+                    })
+            });
+        }
+    }
+
+    function manage_data(data){
+        var SOUTHEAST=0, CENTRE=0, NORTHEAST=0, NORTHWEST=0, NORTH=0, SOUTH=0, EAST=0, WEST=0;
+        var SOUTHEASTprice=0, CENTREprice=0, NORTHEASTprice=0, NORTHWESTprice=0, NORTHprice=0, SOUTHprice=0, EASTprice=0, WESTprice=0;
+        for (var i = 0; i < data.length; i++){
+            if (data[i].accommodates == 2) {
+                if (data[i].borough == "SOUTHEAST" ){
+                    SOUTHEAST++;
+                    SOUTHEASTprice = SOUTHEASTprice +  parseFloat(data[i].price);
+                }
+                if (data[i].borough == "CENTRE" ){
+                    CENTRE++;
+                    CENTREprice += parseFloat(data[i].price);
+                }
+                if (data[i].borough == "NORTHEAST" ){
+                    NORTHEAST++;
+                    NORTHEASTprice += parseFloat(data[i].price);
+                }
+                if (data[i].borough == "NORTHWEST" ){
+                    NORTHWEST++;
+                    NORTHWESTprice += parseFloat(data[i].price);
+                }
+                if (data[i].borough == "NORTH" ){
+                    NORTH++;
+                    NORTHprice += parseFloat(data[i].price);
+                }
+                if (data[i].borough == "SOUTH" ){
+                    SOUTH++;
+                    SOUTHprice += parseFloat(data[i].price);
+                }
+                if (data[i].borough == "EAST" ){
+                    EAST++;
+                    EASTprice += parseFloat(data[i].price);
+                }
+                if (data[i].borough == "WEST" ){
+                    WEST++;
+                    WESTprice += parseFloat(data[i].price);
+                }
+            }
+        }
+
+        dataset = {RECORDS : [{ name : "SOUTHEAST", value : SOUTHEAST, price : SOUTHEASTprice/SOUTHEAST},
+            { name : "CENTRE", value : CENTRE, price : CENTREprice/CENTRE},
+            { name : "NORTHEAST", value : NORTHEAST, price : NORTHEASTprice/NORTHEAST},
+            { name : "NORTHWEST", value : NORTHWEST, price : NORTHWESTprice/NORTHWEST},
+            { name : "NORTH", value : NORTH, price : NORTHprice/NORTH},
+            { name : "SOUTH", value : SOUTH, price : SOUTHprice/SOUTH},
+            { name : "EAST", value : EAST, price : EASTprice/EAST},
+            { name : "WEST", value : WEST, price : WESTprice/WEST}
+            ], SUMS:[{sumBookings : SOUTHEAST+CENTRE+NORTHEAST+NORTHWEST+NORTH+SOUTH+EAST+WEST},
+            {sumPrice: (SOUTHEASTprice/SOUTHEAST+CENTREprice/CENTRE+NORTHEASTprice/NORTHEAST+NORTHWESTprice/NORTHWEST
+                    +NORTHprice/NORTH+SOUTHprice/SOUTH+EASTprice/EAST+WESTprice/WEST)/8}]};
+
+        generateVisualization(dataset);
+    }
+
+    function noMapUpdate() {
+        d3.selectAll("svg").remove();
+        document.getElementById("MAPoption").style.display = 'block';
+        document.getElementById("BACKoption").style.display = 'none';
+        temp = 0;
+        d3.csv(window[selected]).then(function (value) {
+            manage_data(value);
+        });
+    }
+
+    function MAPupdateData() {
+        d3.selectAll("svg").remove();
+        document.getElementById("MAPoption").style.display = 'none';
+        document.getElementById("BACKoption").style.display = 'block';
+
+        temp = 1;
+        d3.csv(window[selected]).then(function (value) {
+            manage_data(value);
+        });
+    }
+
+</script>
+
+</body>
+</html>
