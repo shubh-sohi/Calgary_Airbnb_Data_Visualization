@@ -1,0 +1,52 @@
+body{
+    font: 10px sans-serif;
+}
+.y.axisRight text{
+    fill: #34A853;
+}
+.y.axisLeft text{
+    fill: #4285F4;
+}
+.x.axis text{
+    transform: rotate(40deg);
+}
+.axis path,
+.axis line{
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+.bar1{
+    fill: #4285F4;
+}
+.bar1:hover{
+    fill: red;
+}
+.bar2{
+    fill: #34A853;
+}
+.bar2:hover{
+    fill:red;
+}
+.x.axis path{
+    display: none;
+}
+.d3-tip {
+    line-height: 1;
+    font-weight: bold;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    border-radius: 10px;
+}
+.legend {
+    font-size: 16px;
+    font-weight: bold;
+    text-anchor: start;
+}
+.made{
+    fill: #013416;
+}
+.made:hover{
+    fill:red;
+}

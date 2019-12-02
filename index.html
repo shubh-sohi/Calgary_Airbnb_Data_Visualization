@@ -3,60 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <title>Variation in price in Calgary Airbnb</title>
-    <style>
-        body{
-            font: 10px sans-serif;
-        }
-        .y.axisRight text{
-            fill: #34A853;
-        }
-        .y.axisLeft text{
-            fill: #4285F4;
-        }
-        .x.axis text{
-            transform: rotate(40deg);
-        }
-        .axis path,
-        .axis line{
-            fill: none;
-            stroke: #000;
-            shape-rendering: crispEdges;
-        }
-        .bar1{
-            fill: #4285F4;
-        }
-        .bar1:hover{
-            fill: red;
-        }
-        .bar2{
-            fill: #34A853;
-        }
-        .bar2:hover{
-            fill:red;
-        }
-        .x.axis path{
-            display: none;
-        }
-        .d3-tip {
-            line-height: 1;
-            font-weight: bold;
-            padding: 12px;
-            background: rgba(0, 0, 0, 0.9);
-            color: #fff;
-            border-radius: 10px;
-        }
-        .legend {
-            font-size: 16px;
-            font-weight: bold;
-            text-anchor: start;
-        }
-        .made{
-            fill: #4285F4;
-        }
-        .made:hover{
-            fill:red;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="graphingStyles.css">
+    <!--<style>-->
+        <!--body{-->
+            <!--font: 10px sans-serif;-->
+        <!--}-->
+        <!--.y.axisRight text{-->
+            <!--fill: #34A853;-->
+        <!--}-->
+        <!--.y.axisLeft text{-->
+            <!--fill: #4285F4;-->
+        <!--}-->
+        <!--.x.axis text{-->
+            <!--transform: rotate(40deg);-->
+        <!--}-->
+        <!--.axis path,-->
+        <!--.axis line{-->
+            <!--fill: none;-->
+            <!--stroke: #000;-->
+            <!--shape-rendering: crispEdges;-->
+        <!--}-->
+        <!--.bar1{-->
+            <!--fill: #4285F4;-->
+        <!--}-->
+        <!--.bar1:hover{-->
+            <!--fill: red;-->
+        <!--}-->
+        <!--.bar2{-->
+            <!--fill: #34A853;-->
+        <!--}-->
+        <!--.bar2:hover{-->
+            <!--fill:red;-->
+        <!--}-->
+        <!--.x.axis path{-->
+            <!--display: none;-->
+        <!--}-->
+        <!--.d3-tip {-->
+            <!--line-height: 1;-->
+            <!--font-weight: bold;-->
+            <!--padding: 12px;-->
+            <!--background: rgba(0, 0, 0, 0.9);-->
+            <!--color: #fff;-->
+            <!--border-radius: 10px;-->
+        <!--}-->
+        <!--.legend {-->
+            <!--font-size: 16px;-->
+            <!--font-weight: bold;-->
+            <!--text-anchor: start;-->
+        <!--}-->
+        <!--.made{-->
+            <!--fill: #013416;-->
+        <!--}-->
+        <!--.made:hover{-->
+            <!--fill:red;-->
+        <!--}-->
+    <!--</style>-->
     <h1 style="text-align: center">
         Visualization for 2 bedroom airbnb's booked with
     </h1>
@@ -64,10 +65,10 @@
         their location and price in caldary in between August 2016 to August 2017
 
     </h1>
-    <h3 id = "removeThis">
-        ↓ ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ←← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ←Please select a month
+    <!--<h3 id = "removeThis">-->
+        <!--↓ ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ←← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ←Please select a month-->
 
-    </h3>
+    <!--</h3>-->
     <h1>
         <select id="selectButton"></select>
         <!--<button id = "okay">Go Back</button>-->
@@ -93,55 +94,57 @@
     <script src="d3-tip.js"></script>
 </head>
 <body>
+
+<script src="preDisplay.js"></script>
 <script type="text/javascript">
 
-    document.getElementById('BACKoption').style.display = 'none';
-
-    var groups = ["Select a Month", "august_2016", "sept_2016", "oct_2016", "nov_2016", "dec_2016", "jan_2017", "feb_2017", "mar_2017", "april_2017", "may_2017", "june_2017", "july_2017", "august_2017"];
-
-    var dropDown = d3.select("#selectButton");
-    // var dropDown01 = d3.select("#selectButton01");
-
-    dropDown.selectAll("myButtons")
-        .data(groups)
-        .enter()
-        .append("option")
-        .text(function (d) {return d;})
-        .attr("value", function (d) {return d;});
-
-    // dropDown01.selectAll("myButtons")
+    // document.getElementById('BACKoption').style.display = 'none';
+    //
+    // var groups = ["Select a Month", "august_2016", "sept_2016", "oct_2016", "nov_2016", "dec_2016", "jan_2017", "feb_2017", "mar_2017", "april_2017", "may_2017", "june_2017", "july_2017", "august_2017"];
+    //
+    // var dropDown = d3.select("#selectButton");
+    // // var dropDown01 = d3.select("#selectButton01");
+    //
+    // dropDown.selectAll("myButtons")
     //     .data(groups)
     //     .enter()
     //     .append("option")
     //     .text(function (d) {return d;})
-    //     .attr("value01", function (d) {return d;});
-
-
-    var august_2016 = "calgary/tomslee_airbnb_calgary_0542_2016-08-22.csv", sept_2016 = "calgary/tomslee_airbnb_calgary_0554_2016-09-11.csv",
-        oct_2016 = "calgary/tomslee_airbnb_calgary_0579_2016-09-21.csv", nov_2016 = "calgary/tomslee_airbnb_calgary_0624_2016-10-27.csv",
-        dec_2016 = "calgary/tomslee_airbnb_calgary_0679_2016-12-09.csv", jan_2017 = "calgary/tomslee_airbnb_calgary_0724_2016-12-25.csv",
-        feb_2017 = "calgary/tomslee_airbnb_calgary_0870_2017-02-12.csv", mar_2017 = "calgary/tomslee_airbnb_calgary_0943_2017-03-11.csv",
-        april_2017 = "calgary/tomslee_airbnb_calgary_1055_2017-04-10.csv", may_2017 = "calgary/tomslee_airbnb_calgary_1203_2017-05-08.csv",
-        june_2017 = "calgary/tomslee_airbnb_calgary_1326_2017-06-10.csv", july_2017 = "calgary/tomslee_airbnb_calgary_1443_2017-07-10.csv",
-        august_2017 = "calgary/tomslee_airbnb_calgary_1558_2017-08-10.csv";
-
-    // d3.csv(august_2016).then(function (value) {
-    //     manage_data(value);
+    //     .attr("value", function (d) {return d;});
+    //
+    // // dropDown01.selectAll("myButtons")
+    // //     .data(groups)
+    // //     .enter()
+    // //     .append("option")
+    // //     .text(function (d) {return d;})
+    // //     .attr("value01", function (d) {return d;});
+    //
+    //
+    // var august_2016 = "calgary/tomslee_airbnb_calgary_0542_2016-08-22.csv", sept_2016 = "calgary/tomslee_airbnb_calgary_0554_2016-09-11.csv",
+    //     oct_2016 = "calgary/tomslee_airbnb_calgary_0579_2016-09-21.csv", nov_2016 = "calgary/tomslee_airbnb_calgary_0624_2016-10-27.csv",
+    //     dec_2016 = "calgary/tomslee_airbnb_calgary_0679_2016-12-09.csv", jan_2017 = "calgary/tomslee_airbnb_calgary_0724_2016-12-25.csv",
+    //     feb_2017 = "calgary/tomslee_airbnb_calgary_0870_2017-02-12.csv", mar_2017 = "calgary/tomslee_airbnb_calgary_0943_2017-03-11.csv",
+    //     april_2017 = "calgary/tomslee_airbnb_calgary_1055_2017-04-10.csv", may_2017 = "calgary/tomslee_airbnb_calgary_1203_2017-05-08.csv",
+    //     june_2017 = "calgary/tomslee_airbnb_calgary_1326_2017-06-10.csv", july_2017 = "calgary/tomslee_airbnb_calgary_1443_2017-07-10.csv",
+    //     august_2017 = "calgary/tomslee_airbnb_calgary_1558_2017-08-10.csv";
+    //
+    // // d3.csv(august_2016).then(function (value) {
+    // //     manage_data(value);
+    // // });
+    //
+    // var selected;
+    // var temp = 0;
+    //
+    // dropDown.on("change", function () {
+    //     // document.getElementById('removeThis').style.display = 'none';
+    //     d3.selectAll("svg").remove();
+    //     selected = this.value;
+    //     // console.log(window[selected]);
+    //     d3.csv(window[selected]).then(function (value) {
+    //         manage_data(value);
+    //     });
+    //
     // });
-
-    var selected;
-    var temp = 0;
-
-    dropDown.on("change", function () {
-        document.getElementById('removeThis').style.display = 'none';
-        d3.selectAll("svg").remove();
-        selected = this.value;
-        // console.log(window[selected]);
-        d3.csv(window[selected]).then(function (value) {
-            manage_data(value);
-        });
-
-    });
 
 
     function generateVisualization(fullset){
@@ -188,7 +191,7 @@
                 .attr('class', 'd3-tip')
                 .offset([-10, 0])
                 .html(function(d) {
-                    return "<strong>Bookings:</strong> <span style='color:red'>" + d.value + "</span>";
+                    return "<strong>Total Bookings:</strong> <span style='color:red'>" + d.value + "</span>";
             });
 
             svgLeft.append("text")
@@ -319,13 +322,13 @@
 
         }
         // graph_combination(svg01);
-
+        var which_hover;
         function graph_combination(svgLeft){
             var tip = d3.tip()
                 .attr('class', 'd3-tip')
                 .offset([-10, 0])
                 .html(function(d) {
-                    return "<strong>Bookings:</strong> <span style='color:red'>" + d.value + "</span>";
+                    return "<strong>Total Bookings:</strong> <span style='color:red'>" + d.value + "</span>";
                 });
 
             var tip01 = d3.tip()
@@ -377,8 +380,8 @@
 
             bars.append("rect")
                 .call(tip)
-                .on("mouseover", tip.show)
-                .on("mouseout", tip.hide)
+                .on("mouseover", tip.show, which_hover = true)
+                .on("mouseout", tip.hide, which_hover = false)
                 .transition()
                 .delay(function(d, i) { return i*60; })
                 .duration(500)
@@ -421,6 +424,10 @@
 
         function rightMap(svgRight){
 
+            var tip = d3.tip()
+                .attr('class', 'd3-tip')
+                .offset([-10, 0]);
+
             svgRight = d3.select("body")
                 .append("svg")
                 .attr("width", width + margin.left + margin.right)
@@ -438,6 +445,22 @@
 
             d3.json("https://data.calgary.ca/resource/mz2j-7eb5.geojson").then(function(json) {
 
+                tip.html(function (d) {
+                    var nowvalue, nowprice;
+                    for (var i = 0 ; i < 8; i++){
+                        if (dataset[i].name == d.properties.sector){
+                            nowvalue = dataset[i].value;
+                            nowprice = dataset[i].price
+                        }
+                    }
+                    return "<strong>Area : </strong> <span>" + d.properties.sector + "</span><br>"+
+                    "<strong>Total Bookings : </strong> <span style='color:#4285F4'>" + nowvalue + "</span><br>"+
+                    "<strong>Average Price : $</strong> <span style='color:#34A853'>" + nowprice.toFixed(2) + "</span>"
+                    // return
+                    // "Area : "+d.properties.sector+"\nThere were "+nowvalue+" Bookings in the month of "+selected+
+                    //     "\nwith an average price of $"+nowprice.toFixed(2)+" per booking.";
+                });
+
                 var projection = d3.geoMercator()
                     .fitSize([width+100,height+100],json);
 
@@ -451,22 +474,28 @@
                     .data(json.features)
                     .enter()
                     .append("path")
+                    .call(tip)
+                    .on("mouseover", tip.show)
+                    .on("mouseout", tip.hide)
+                    // .transition()
+                    // .delay(function(d, i) { return i*60; })
+                    // .duration(500)
                     .attr("d", path)
                     // .attr('fill', 'steelblue')
-                    .attr('stroke', 'black')
-                    .attr("class", "made")
-                    .append('title')
-                    .text(function(d) {
-                        var nowvalue, nowprice;
-                        for (var i = 0 ; i < 8; i++){
-                            if (dataset[i].name == d.properties.sector){
-                                nowvalue = dataset[i].value;
-                                nowprice = dataset[i].price
-                            }
-                        }
-                        return "Area : "+d.properties.sector+"\nThere were "+nowvalue+" Bookings in the month of "+selected+
-                            "\nwith an average price of $"+nowprice.toFixed(2)+" per booking.";
-                    })
+                    .attr('stroke', 'white')
+                    .attr("class", "made");
+            //         .append('title')
+            //         .text(function(d) {
+            //             var nowvalue, nowprice;
+            //             for (var i = 0 ; i < 8; i++){
+            //                 if (dataset[i].name == d.properties.sector){
+            //                     nowvalue = dataset[i].value;
+            //                     nowprice = dataset[i].price
+            //                 }
+            //             }
+            //             return "Area : "+d.properties.sector+"\nThere were "+nowvalue+" Bookings in the month of "+selected+
+            //                 "\nwith an average price of $"+nowprice.toFixed(2)+" per booking.";
+            //         });
             });
         }
     }
