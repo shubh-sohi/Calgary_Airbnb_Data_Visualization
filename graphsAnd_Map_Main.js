@@ -294,6 +294,10 @@ function generateVisualization(fullset){
             .style("fill", "#626665")
             .text("Hover over the map to get the relative information.");
 
+        //The calgary json data set is provide by the City of Calgary
+        // Contains information licensed under the Open Government Licence – City of Calgary.
+        //link to which is https://data.calgary.ca/stories/s/Open-Calgary-Terms-of-Use/u45n-7awa
+
         d3.json("https://data.calgary.ca/resource/mz2j-7eb5.geojson").then(function(json) {
 
             tip.html(function (d) {
