@@ -42,7 +42,7 @@ body{
 .legend {
     font-size: 16px;
     font-weight: bold;
-    text-anchor: start;
+    /*text-anchor: start;*/
 }
 .made{
     fill: #013416;
