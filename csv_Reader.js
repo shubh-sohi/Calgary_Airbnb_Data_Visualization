@@ -1,3 +1,6 @@
+//Function goes through the argument provided csv, maintaining variables to keep
+//count of the number of bookings and the price per booking(to compute the average)
+//if only updates the variables if they have value corresponding to two bedrooms
 function manage_data(data){
     var SOUTHEAST=0, CENTRE=0, NORTHEAST=0, NORTHWEST=0, NORTH=0, SOUTH=0, EAST=0, WEST=0;
     var SOUTHEASTprice=0, CENTREprice=0, NORTHEASTprice=0, NORTHWESTprice=0, NORTHprice=0, SOUTHprice=0, EASTprice=0, WESTprice=0;
@@ -38,6 +41,7 @@ function manage_data(data){
         }
     }
 
+    //computed data is hashed into a javascript object as to pass as argument to the graphing function
     dataset = {RECORDS : [{ name : "SOUTHEAST", value : SOUTHEAST, price : SOUTHEASTprice/SOUTHEAST},
             { name : "CENTRE", value : CENTRE, price : CENTREprice/CENTRE},
             { name : "NORTHEAST", value : NORTHEAST, price : NORTHEASTprice/NORTHEAST},
@@ -50,5 +54,6 @@ function manage_data(data){
             {sumPrice: (SOUTHEASTprice/SOUTHEAST+CENTREprice/CENTRE+NORTHEASTprice/NORTHEAST+NORTHWESTprice/NORTHWEST
                     +NORTHprice/NORTH+SOUTHprice/SOUTH+EASTprice/EAST+WESTprice/WEST)/8}]};
 
+    //graphing function
     generateVisualization(dataset);
 }
